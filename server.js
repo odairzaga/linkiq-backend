@@ -44,8 +44,10 @@ pool.query('SELECT NOW()', async (err, res) => {
 
 // Middleware
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'https://linkiq.tech',
-    credentials: true
+    origin: ['https://linkiq.tech', 'https://www.linkiq.tech', 'https://linkiq-pro.vercel.app'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
