@@ -15,11 +15,30 @@ const pool = new Pool({
 });
 
 // Test database connection
-pool.query('SELECT NOW()', (err, res) => {
+pool.query('SELECT NOW()', async (err, res) => {
     if (err) {
         console.error('❌ Database connection error:', err);
     } else {
         console.log('✅ Database connected:', res.rows[0].now);
+        
+        // Auto-run migrations
+        try {
+            console.log('🔄 Running auto-migrations...');
+            
+            const fs = require('fs');
+            const path = require('path');
+            const sqlPath = path.join(__dirname, 'database', 'init.sql');
+            
+            if (fs.existsSync(sqlPath)) {
+                const sql = fs.readFileSync(sqlPath, 'utf8');
+                await pool.query(sql);
+                console.log('✅ Migrations completed successfully!');
+            } else {
+                console.log('⚠️ Migration file not found, skipping...');
+            }
+        } catch (migrationError) {
+            console.log('⚠️ Migration error (may be already applied):', migrationError.message);
+        }
     }
 });
 
